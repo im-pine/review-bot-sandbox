@@ -1,14 +1,9 @@
-import { Suspense } from "react";
 import type { Metadata } from "next";
 import { MemberOrderList } from "@/features/shop/mypage/components/MemberOrderList";
 
 export const metadata: Metadata = { title: "주문 내역 | Pine Bakery" };
 
-/** 주문 내역 로딩 중 스켈레톤 표시 */
+/** 화면 틀은 바로 그리고, 데이터가 필요한 부분만 MemberOrderList 안의 Suspense가 나중에 채운다 */
 export default function Page({ searchParams }: PageProps<"/mypage/orders">) {
-  return (
-    <Suspense fallback={<div aria-busy="true" className="h-96 animate-pulse bg-section" />}>
-      <MemberOrderList searchParams={searchParams} />
-    </Suspense>
-  );
+  return <MemberOrderList searchParams={searchParams} />;
 }
