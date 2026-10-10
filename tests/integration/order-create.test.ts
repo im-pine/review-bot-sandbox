@@ -121,3 +121,18 @@ describe("주문 저장", () => {
     expect(second.orderNo).toBe(first.orderNo.replace(/0001$/, "0002"));
   });
 });
+
+// #test/필수 #test/캐시 #test/통합
+// 리뷰봇이 AI 판단(R-ARCH-03)으로 잡던 "캐시 태그 갱신 누락"을 테스트로 고정한다 (판정이 실행마다 흔들리지 않게)
+describe("주문 생성 후 캐시 갱신", () => {
+  test("주문 데이터를 읽는 캐시(orders: 관리자 주문 목록 · 건수 · 회원 주문 내역)와 인기순(product-sales)을 모두 갱신한다", async () => {
+    const result = await placeOrder({
+      ...orderer,
+      requestNote: "",
+      items: [{ productId: products.campagne.id, quantity: 1, giftWrap: false }],
+    });
+    expect(result).toHaveProperty("orderNo");
+    expect(updateTag).toHaveBeenCalledWith("orders");
+    expect(updateTag).toHaveBeenCalledWith("product-sales");
+  });
+});
