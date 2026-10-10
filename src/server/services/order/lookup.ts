@@ -122,7 +122,8 @@ export async function getAccessibleOrder(orderNo: string) {
     ...rest,
     recipientName: maskName(order.recipientName),
     recipientPhone: maskPhone(order.recipientPhone),
-    address: maskAddress(order.address),
+    // 배송 확인 편의를 위해 주소는 그대로 보여 준다
+    address: order.address,
   };
 }
 
