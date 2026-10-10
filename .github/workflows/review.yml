@@ -1,6 +1,7 @@
-# 리뷰봇 호출 파일 — 리뷰받을 저장소의 .github/workflows/review.yml 로 복사한다
-# 필요한 시크릿(저장소마다): REVIEW_BOT_TOKEN, CLAUDE_CODE_OAUTH_TOKEN
-# 리뷰 시작: PR의 Reviewers에 im-pine-bot 지정 / 한도 추가: im-pine 계정으로 "/review-quota +N" 코멘트
+# 리뷰봇 — 공개 저장소용 독립 워크플로 (.github/workflows/review.yml 로 복사)
+# 자동 생성: review-bot의 scripts/build-public-template.mjs — 직접 고치지 말고 공통 워크플로를 고친 뒤 다시 생성한다
+# 비공개 저장소는 templates/caller-review.yml(공통 워크플로 호출)을 쓴다
+# 필요한 시크릿: REVIEW_BOT_TOKEN, CLAUDE_CODE_OAUTH_TOKEN
 name: review-bot
 
 on:
@@ -20,10 +21,111 @@ permissions:
   contents: read
 
 jobs:
+  gate:
+    # 공개 저장소 대비: 포크 PR(시크릿 없음) · 남의 코멘트로는 실행하지 않는다.
+    # 한도 명령은 im-pine 계정의 "/review-quota" 코멘트만, 리뷰봇 자신의 코멘트도 여기서 걸러진다.
+    if: >-
+      (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) &&
+      (github.event_name != 'issue_comment' || (github.event.issue.pull_request && github.event.comment.user.login == 'im-pine' && startsWith(github.event.comment.body, '/review-quota')))
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      prs: ${{ steps.gate.outputs.prs }}
+    steps:
+      - name: 리뷰봇 코드 가져오기
+        uses: actions/checkout@v4
+        with:
+          repository: im-pine/review-bot
+          token: ${{ secrets.REVIEW_BOT_TOKEN }}
+          path: .review-bot
+      - name: 리뷰할 PR · 한도 결정
+        id: gate
+        env:
+          GH_TOKEN: ${{ secrets.REVIEW_BOT_TOKEN }}
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_PATH: ${{ github.event_path }}
+          REPO: ${{ github.repository }}
+          MANUAL_PR: ${{ github.event.inputs.pr }}
+        run: node .review-bot/scripts/gate.mjs
+
   review:
-    uses: im-pine/review-bot/.github/workflows/review.yml@main
-    with:
-      manual_pr: ${{ inputs.pr || '' }}
-    secrets:
-      REVIEW_BOT_TOKEN: ${{ secrets.REVIEW_BOT_TOKEN }}
-      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+    needs: gate
+    if: needs.gate.outputs.prs != '[]' && needs.gate.outputs.prs != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 40 # CI 대기 최대 15분 + Claude 리뷰 20분 + 여유
+    strategy:
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+        pr: ${{ fromJSON(needs.gate.outputs.prs) }}
+    # 같은 PR에 새 커밋이 오면 진행 중인 리뷰를 취소하고 최신 것만
+    concurrency:
+      group: review-bot-${{ github.repository }}-${{ matrix.pr.number }}
+      cancel-in-progress: true
+    steps:
+      - name: 리뷰 대상 저장소 (PR 브랜치)
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.REVIEW_BOT_TOKEN }}
+          fetch-depth: 0
+      - name: PR 브랜치로 전환
+        env:
+          GH_TOKEN: ${{ secrets.REVIEW_BOT_TOKEN }}
+        run: gh pr checkout ${{ matrix.pr.number }}
+      - name: 리뷰봇 지침 · 스크립트
+        uses: actions/checkout@v4
+        with:
+          repository: im-pine/review-bot
+          token: ${{ secrets.REVIEW_BOT_TOKEN }}
+          path: .review-bot
+      - name: 다른 CI가 끝날 때까지 대기 (최대 15분)
+        env:
+          GH_TOKEN: ${{ secrets.REVIEW_BOT_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ matrix.pr.number }}
+          WAIT_MINUTES: "15"
+        run: node .review-bot/scripts/wait-ci.mjs
+      - name: 프롬프트 · 스키마 준비
+        id: prep
+        run: |
+          # 스키마는 claude_args에서 작은따옴표로 감싸므로, 안에 작은따옴표가 있으면 실행 전에 멈춘다
+          if grep -q "'" .review-bot/prompts/schema.json; then echo "::error::prompts/schema.json에 작은따옴표(')가 있으면 안 됩니다"; exit 1; fi
+          MODE=$([ "${{ matrix.pr.light }}" = "true" ] && echo "가벼운 모드" || echo "전체")
+          sed -e "s|{{REPO}}|${{ github.repository }}|g" -e "s|{{PR}}|${{ matrix.pr.number }}|g" -e "s|{{MODE}}|$MODE|g" \
+            .review-bot/prompts/review.md > /tmp/prompt.md
+          {
+            echo "prompt<<__EOF__"; cat /tmp/prompt.md; echo "__EOF__"
+            echo "schema=$(tr -d '\n' < .review-bot/prompts/schema.json)"
+            echo "started=$(date +%s)"
+          } >> "$GITHUB_OUTPUT"
+      - name: Claude 리뷰 (판단만)
+        id: claude
+        timeout-minutes: 20
+        uses: anthropics/claude-code-action@v1
+        env:
+          GH_TOKEN: ${{ secrets.REVIEW_BOT_TOKEN }}
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          github_token: ${{ secrets.REVIEW_BOT_TOKEN }}
+          prompt: ${{ steps.prep.outputs.prompt }}
+          display_report: "false"
+          claude_args: >-
+            --model ${{ matrix.pr.model }}
+            --max-turns ${{ matrix.pr.maxTurns }}
+            --json-schema '${{ steps.prep.outputs.schema }}'
+            --allowedTools "Read,Grep,Glob,Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr checks:*),Bash(gh run view:*),Bash(gh run list:*),Bash(git log:*),Bash(git diff:*),Bash(git show:*),Bash(ls:*),Bash(cat:*)"
+            --disallowedTools "Edit,Write,NotebookEdit,WebFetch,WebSearch"
+      - name: 게시 · 라벨 · 기록
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.REVIEW_BOT_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ matrix.pr.number }}
+          MODEL: ${{ matrix.pr.model }}
+          LIGHT: ${{ matrix.pr.light }}
+          RESULT: ${{ steps.claude.outputs.structured_output }}
+          CONCLUSION: ${{ steps.claude.outputs.conclusion }}
+          EXECUTION_FILE: ${{ steps.claude.outputs.execution_file }}
+        run: |
+          export DURATION_SEC=$(( $(date +%s) - ${{ steps.prep.outputs.started }} ))
+          node .review-bot/scripts/publish.mjs
