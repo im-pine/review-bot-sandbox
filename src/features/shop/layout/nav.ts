@@ -12,7 +12,7 @@ export const SHOP_INFO = {
   address: "서울시 성동구 베이커리로 12",
   phone: "02-000-0000",
   email: "im.pine.dev@gmail.com",
-  copyright: "© 2026 Pine Bakery. 포트폴리오용 데모 사이트입니다.",
+  copyright: "© 2026 Pine Bakery. 데모 사이트입니다.",
 };
 
 export const CUSTOMER_CARE = ["주문 안내", "배송 안내", "자주 묻는 질문"];
