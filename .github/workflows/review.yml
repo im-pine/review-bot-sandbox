@@ -1,7 +1,7 @@
 # 리뷰봇 — 공개 저장소용 독립 워크플로 (.github/workflows/review.yml 로 복사)
 # 자동 생성: review-bot의 scripts/build-public-template.mjs — 직접 고치지 말고 공통 워크플로를 고친 뒤 다시 생성한다
 # 비공개 저장소는 templates/caller-review.yml(공통 워크플로 호출)을 쓴다
-# 필요한 시크릿: REVIEW_BOT_TOKEN, CLAUDE_CODE_OAUTH_TOKEN
+# 필요한 시크릿: REVIEW_BOT_TOKEN, CLAUDE_CODE_OAUTH_TOKEN / 자동 머지(선택): 저장소 변수 REVIEW_BOT_AUTO_MERGE=true
 name: review-bot
 
 on:
@@ -128,6 +128,7 @@ jobs:
           RESULT: ${{ steps.claude.outputs.structured_output }}
           CONCLUSION: ${{ steps.claude.outputs.conclusion }}
           EXECUTION_FILE: ${{ steps.claude.outputs.execution_file }}
+          AUTO_MERGE: ${{ vars.REVIEW_BOT_AUTO_MERGE || 'false' }}
         run: |
           export DURATION_SEC=$(( $(date +%s) - ${{ steps.prep.outputs.started }} ))
           node .review-bot/scripts/publish.mjs
