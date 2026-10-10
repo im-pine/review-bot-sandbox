@@ -1,0 +1,197 @@
+# FigmaMcp — AI 기반 베이커리 쇼핑몰 제작 시간 측정 프로젝트
+
+> Figma MCP로 디자인을 자동 생성하고 그 디자인을 바탕으로 Next.js 쇼핑몰을 구현하면서, **AI를 활용한 쇼핑몰 제작이 실제로 얼마나 걸리는지** 단계별로 측정하는 프로젝트입니다.
+
+<p align="center">
+  <a href="https://bakery.im-pine.com/"><b>🥐 배포된 사이트 바로 가기 → bakery.im-pine.com</b></a>
+</p>
+
+## 👀 바로 둘러보기
+
+설치 없이 아래 링크로 바로 확인할 수 있습니다. **PC · 모바일 모두** 같은 주소입니다 (모바일은 하단 탭 바 · 카테고리 버블 메뉴로 구성이 달라집니다).
+
+| 보고 싶은 것 | 바로 가기 |
+| --- | --- |
+| 쇼핑몰 홈 | [bakery.im-pine.com](https://bakery.im-pine.com/) |
+| 상품 목록 (카테고리 · 검색 · 인기순/최신순) | [/products](https://bakery.im-pine.com/products) |
+| 주문 내역 (회원 화면) | [/mypage](https://bakery.im-pine.com/mypage) → **임시 로그인** 버튼 |
+| 관리자 (조회는 누구나) | [/admin](https://bakery.im-pine.com/admin) 또는 헤더의 "관리자 페이지" |
+
+**추천 순서:** 상품 담기 → 장바구니 → 주문서 → 결제창(데모) → 주문 완료 → 마이페이지 **임시 로그인**에서 주문 내역 확인 → 관리자에서 주문 상태 변경 확인
+
+> 데모 사이트입니다. **실제 개인정보를 입력하지 마세요.** 결제는 실제로 진행되지 않습니다. 관리자의 데이터 변경(저장 · 삭제 · 상태 변경)은 비밀번호가 필요하고 조회만 자유롭게 가능합니다.
+
+---
+
+## 🚀 Project Overview
+
+이 프로젝트의 목적은 쇼핑몰 자체보다 **제작 과정에 걸리는 시간**을 확인하는 데 있습니다.
+
+Figma MCP를 이용해 Figma에 웹 디자인을 자동으로 만들고, 그 디자인을 기준으로 실제 웹 사이트를 구현합니다. 프로젝트 설계부터 마무리까지 모든 단계를 나누어 소요 시간을 기록하고, **목표 시간(1일, 업무 시간 기준 8시간)** 과 실제 소요 시간을 비교합니다.
+
+도메인은 **베이커리 쇼핑몰**입니다. 제작 범위는 **쇼핑몰(사용자)** 과 **관리자 페이지** 두 영역입니다.
+
+## 🔗 결과물
+
+- [배포된 사이트](https://bakery.im-pine.com/) — 쇼핑몰 · 관리자 (Vercel)
+- [프로젝트 Wiki](https://github.com/im-pine/FigmaMcp/wiki) — 디자인 시스템, 아키텍처, 시간 측정 기록 등 상세 문서
+- [Figma 디자인 파일](https://www.figma.com/design/K2JSj6AYetrUr0BpoN4R7u) — 쇼핑몰 · 관리자 데스크톱 · 모바일 화면, 컴포넌트, 디자인 토큰
+- [디자인 브리프](./docs/design-brief.md) — 색 · 타이포그래피 · 화면 구성 · 이미지 규칙
+
+---
+
+## ⏱ 시간 측정
+
+| 순서 | 단계 | 범위 | 소요 시간 | 합계 반영 | 비고 |
+| --- | --- | --- | --- | --- | --- |
+| 1 | 프로젝트 설계 | 기능 범위 · 기술 스택 결정 | 1시간 10분 | 1시간 10분 |  |
+| 2 | 레퍼런스 조사 | 디자인 방향 결정 | 44분 | 44분 |  |
+| 3 | 쇼핑몰 디자인 | 사용자 페이지 Figma 디자인 | 2시간 | 2시간 |  |
+| 4 | 쇼핑몰 개발 | 사용자 페이지 구현 | 2시간 28분 | 2시간 28분 |  |
+| 5 | 관리자 디자인 | 관리자 페이지 Figma 디자인 | 1시간 | **0분** | 개발과 병행 |
+| 6 | 관리자 개발 | 관리자 페이지 구현 | 48분 | **0분** | 마무리와 병행 |
+| 7 | 마무리 | 디자인 디테일 · UX 점검 · 테스트 | 1시간 18분 | 1시간 18분 |  |
+|  | **합계** | **목표: 8시간 이내** | 9시간 28분 | **7시간 40분** | 병행 **−1시간 48분** |
+
+macOS 타이머 앱 [Session](https://www.stayinsession.com/)으로 측정하며, 휴식과 일시정지 구간은 제외합니다.
+관리자 디자인 · 개발은 다른 세션과 동시에 진행해 Claude Code 대화 기록의 메시지 시각으로 계산했습니다 (10분 이상 공백 제외).
+
+측정 방식과 단계별 회고는 [Wiki — Time](https://github.com/im-pine/FigmaMcp/wiki/Project%E2%80%90Time)에 정리했습니다.
+
+---
+
+## ✨ 주요 기능
+
+실제 결제는 범위에서 제외합니다. **비회원**이 쇼핑몰을 이용한다는 전제로 구현하고, 회원 화면(주문 내역)은 카카오 로그인 전까지 **임시 로그인**(데모 회원)으로 보여 줍니다.
+
+### 쇼핑몰
+
+- 상품 목록 · 카테고리 필터 · 검색 · **정렬(인기순 · 최신순)** · 상세 조회
+- 장바구니 담기 / 수량 변경 / 삭제 (새로고침 후에도 유지)
+- 주문서 작성 후 결제창 표시까지 진행 (실제 결제 없음, 실제 개인정보 입력 금지 안내)
+- 마이페이지: 주문번호 + 연락처로 비회원 주문 상세 조회, **임시 로그인** 후 주문 내역(상태별 필터 · 상태 색)과 로그아웃 드롭 메뉴 (카카오 로그인은 추후 도입)
+- 모바일 전용 내비게이션: 하단 고정 탭 바, 카테고리 버블 메뉴
+
+### 관리자
+
+- 상품 등록 / 수정 / 삭제, 주문 조회 및 상태 관리
+- 주문 상태 **일괄 변경** (여러 주문을 선택해 상태만 한 번에 변경), 모바일은 하단 탭의 **접수** 바로가기로 새 주문 확인
+- 포트폴리오 확인용으로 **조회는 누구나 가능**, 데이터 변경은 **관리자 비밀번호** 확인 후 실행
+- 주문자 개인정보는 마스킹해서 표시
+
+### 제외 범위
+
+| 기능 | 처리 방식 |
+| --- | --- |
+| 로그인 / 회원가입 | 임시 로그인(데모 회원)만 구현, 실제 회원가입 · 카카오 로그인은 추후 도입 예정 |
+| 결제 | PG 연동 없이 결제창 UI까지만 구현 |
+| 이미지 업로드 | `public/`의 고정 이미지 사용 |
+
+---
+
+## 🎨 Design
+
+**우아하면서 따뜻한, 갓 구운 빵 냄새가 나는 베이커리.** 베이지 바탕에 브라운을 조합하고, 브랜드 그린을 클릭 요소의 포인트 색으로 씁니다. 디자인 토큰 · 컴포넌트 · 화면 · 이미지는 모두 Figma MCP로 생성했습니다.
+
+| 문서 | 내용 |
+| --- | --- |
+| [Colors](https://github.com/im-pine/FigmaMcp/wiki/FrontEnd%E2%80%90Colors) | 색 스케일 5종(같은 단계 = 같은 밝기), 시맨틱 토큰, 카테고리 색 |
+| [Design](https://github.com/im-pine/FigmaMcp/wiki/FrontEnd%E2%80%90Design) | 콘셉트 · 레퍼런스, 화면 목록, 모바일 재설계, 사용자 흐름 |
+| [Components](https://github.com/im-pine/FigmaMcp/wiki/FrontEnd%E2%80%90Components) | 공통 · 데스크톱 · 모바일 컴포넌트 |
+| [Figma MCP](https://github.com/im-pine/FigmaMcp/wiki/Project%E2%80%90Figma%E2%80%90MCP) | 플랜 한도, 이미지 생성 · 배경 제거 방법 |
+
+---
+
+## 🛠 Core Stack
+
+이 프로젝트의 기술 선택 기준은 **8시간 안에 완성할 수 있는가**입니다.
+
+| 영역 | 기술 | 선택 이유 (요약) |
+| --- | --- | --- |
+| Framework | Next.js (App Router) | 별도 백엔드 서버 없이 화면과 API를 한 프로젝트에서 구현 |
+| Language | TypeScript | 데이터 모델부터 UI까지 타입 안정성 확보 |
+| ORM | Prisma | DB 스키마에서 생성된 타입을 애플리케이션 타입으로 그대로 사용 |
+| Validation | Zod | Prisma 스키마에서 자동 생성한 Zod 스키마로 서버 입력값 검증 |
+| Database | PostgreSQL | Prisma 최신 아키텍처(Prisma 8)가 우선 지원하는 DB |
+| Server State | Next.js 서버 캐시 (`use cache`) | 상품 · 주문 조회를 서버에서 캐시하고, 변경한 Server Action에서 `updateTag`로 갱신 |
+| Client State | Zustand | 장바구니 같은 단순한 전역 상태를 store 하나로 관리 |
+| Styling | Tailwind CSS | 디자인 토큰을 utility로 바로 옮겨 빠르게 반영 |
+| UI Components | shadcn/ui | Tailwind 구조를 유지하면서 반복 UI 구현 시간 단축 |
+| Unit · Integration Test | Jest + Testing Library | 계산 · 검증 · 권한 로직과 컴포넌트를 사용자 행동 기준으로 테스트 (Next.js 공식 설정) |
+| E2E Test | Playwright | 구매 → 주문조회 핵심 흐름을 실제 브라우저(데스크톱 · 모바일)로 확인 (Next.js 공식 가이드) |
+
+## 🧠 핵심 설계
+
+- **Server Component 조회 + Server Action 변경** — Route Handler 없이 서버 로직을 처리하고, DB 로직은 `server/services`로 분리 → [Architecture](https://github.com/im-pine/FigmaMcp/wiki/BackEnd%E2%80%90Architecture)
+- **Prisma 스키마를 타입의 단일 기준으로** — 프론트엔드 interface를 따로 만들지 않고 Prisma 생성 타입과 자동 생성 Zod 스키마 사용 → [Data](https://github.com/im-pine/FigmaMcp/wiki/BackEnd%E2%80%90Data)
+- **인증 없는 공개 관리자 페이지 보호** — 변경은 서버에서 비밀번호 확인, 개인정보는 서버에서 마스킹 → [Architecture](https://github.com/im-pine/FigmaMcp/wiki/BackEnd%E2%80%90Architecture)
+- **서버 상태와 클라이언트 상태 분리** — 상품 · 주문은 서버 캐시(`use cache` + `updateTag`), 장바구니는 Zustand + persist → [State](https://github.com/im-pine/FigmaMcp/wiki/FrontEnd%E2%80%90State)
+
+---
+
+## ⚙️ Getting Started
+
+### Requirements
+
+- Node.js 24 이상
+- pnpm 10 (`corepack enable pnpm`)
+- Docker (로컬 PostgreSQL)
+
+### Environment Variables
+
+```bash
+cp .env.example .env
+```
+
+| 변수 | 설명 |
+| --- | --- |
+| `DATABASE_URL` | PostgreSQL 연결 정보. 로컬과 배포 환경은 이 값만 바꿔서 구분합니다. |
+| `ADMIN_PASSWORD` | 관리자 데이터 변경 시 확인하는 비밀번호. 서버에서만 읽으므로 `NEXT_PUBLIC_` 접두사를 붙이지 않습니다. |
+
+### Installation & Development
+
+```bash
+pnpm install        # 설치 후 Prisma client · Zod 스키마 자동 생성
+pnpm db:migrate     # DB 마이그레이션
+pnpm db:seed        # 상품 12종 시드
+pnpm dev            # http://localhost:3000  (디자인 시스템 미리보기: /dev/ui)
+```
+
+| Command | Description |
+| --- | --- |
+| `pnpm build` | 프로덕션 빌드 |
+| `pnpm lint` | ESLint (영역 경계 규칙 포함) |
+| `pnpm typecheck` | 라우트 타입 생성 + TypeScript 검사 |
+| `pnpm format` | Prettier |
+| `pnpm db:studio` | Prisma Studio |
+
+### Testing
+
+```bash
+cp .env.test.example .env.test   # 테스트 전용 DB(figmamcp_test) — 통합 · E2E가 비우고 다시 채움
+pnpm test                         # 단위 · 컴포넌트 (DB 없음)
+pnpm test:integration             # 서버 로직 + 테스트 DB
+pnpm test:e2e                     # 프로덕션 빌드를 3800 포트에 띄워 브라우저로 확인
+```
+
+| 도구 | 쓰는 곳 | 고른 이유 |
+| --- | --- | --- |
+| Jest 30 | 단위 · 통합 테스트 실행 | Next.js 공식 설정(`next/jest`) 지원, 주간 다운로드 5천만+ · 2026-09 릴리스 |
+| Testing Library (react · dom · jest-dom · user-event) | 컴포넌트 · store 테스트 | 내부 구현이 아니라 사용자가 보는 화면 · 클릭 기준으로 테스트. user-event는 실제 입력 순서를 흉내 냄 |
+| jest-environment-jsdom | 컴포넌트 테스트 환경 | 브라우저 없이 DOM을 실행 (Next.js 문서 권장) |
+| Playwright 1.63 | E2E | 실제 브라우저 · 모바일 화면 에뮬레이션 내장, 서버 자동 실행(`webServer`). 주간 다운로드 8천만+ · 2026-09 릴리스 |
+
+- 비동기 Server Component는 Jest가 지원하지 않아(Next.js 문서) 화면 흐름은 E2E로 확인합니다.
+- 테스트 항목 선정 기준과 구성은 [Wiki — Testing](https://github.com/im-pine/FigmaMcp/wiki/Project%E2%80%90Testing)에 정리했습니다. PR마다 GitHub Actions에서 자동으로 실행됩니다.
+
+폴더 구조와 개발 규칙은 [`CLAUDE.md`](./CLAUDE.md)를 참고하세요.
+
+---
+
+## 🚀 Deployment
+
+- 배포 주소: **https://bakery.im-pine.com/**
+- Hosting: Vercel (`main` 브랜치 기준 자동 배포)
+- 배포 환경의 DB 연결 정보는 Vercel 환경 변수 `DATABASE_URL`로, 관리자 비밀번호는 `ADMIN_PASSWORD`로 주입합니다.
+- 배포할 때마다 `vercel-build`(`prisma migrate deploy && next build`)가 DB 마이그레이션을 먼저 적용합니다.
+- 새 DB에는 최초 한 번 시드(상품 12개 · 데모 주문 10건)를 직접 넣습니다: `DATABASE_URL="<배포 DB>" pnpm db:seed` 후 Redeploy
