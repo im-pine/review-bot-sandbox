@@ -22,6 +22,7 @@ permissions:
 
 jobs:
   gate:
+    name: 리뷰 관문
     # 공개 저장소 대비: 포크 PR(시크릿 없음) · 남의 코멘트로는 실행하지 않는다.
     # 한도 명령은 im-pine 계정의 "/review-quota" 코멘트만, 리뷰봇 자신의 코멘트도 여기서 걸러진다.
     if: >-
@@ -49,6 +50,7 @@ jobs:
         run: node .review-bot/scripts/gate.mjs
 
   review:
+    name: 리뷰 실행 (PR #${{ matrix.pr.number }})
     needs: gate
     if: needs.gate.outputs.prs != '[]' && needs.gate.outputs.prs != ''
     runs-on: ubuntu-latest
