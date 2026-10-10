@@ -99,13 +99,21 @@ export async function getAdminOrder(orderNo: string) {
     ordererPhone: maskPhone(order.ordererPhone),
     ordererEmail: maskEmail(order.ordererEmail),
     recipientName: maskName(order.recipientName),
-    // 배송 기사가 바로 연락할 수 있게 상세에서는 수령인 연락처를 그대로 보여 준다
-    recipientPhone: order.recipientPhone,
+    recipientPhone: maskPhone(order.recipientPhone),
     address: maskAddress(order.address),
   };
 }
 
 export type AdminOrder = NonNullable<Awaited<ReturnType<typeof getAdminOrder>>>;
+
+/**
+ * 수령인 연락처 원본 — 배송 연락용. 관리자 비밀번호를 확인한 Server Action에서만 부른다 (사용자 결정 2026-10-10, 리뷰봇 선택지 C).
+ * 개인정보 원본이라 캐시하지 않고, 조회 응답(getAdminOrder)에는 계속 마스킹된 값만 둔다.
+ */
+export async function getRecipientPhone(orderNo: string): Promise<string | null> {
+  const order = await db.order.findUnique({ where: { orderNo }, select: { recipientPhone: true } });
+  return order?.recipientPhone ?? null;
+}
 
 /**
  * 주문 상태 변경 (1건 · 일괄 공용). 한 트랜잭션에서 처리한다.
