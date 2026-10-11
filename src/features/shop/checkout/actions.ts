@@ -13,8 +13,9 @@ export async function placeOrder(input: unknown): Promise<PlaceOrderResult> {
 
   const result = await createOrder({ ...parsed.data, requestNote: parsed.data.requestNote ?? null });
   if (result.ok) {
-    updateTag("product-sales"); // 판매수가 바뀌었으니 인기순 목록 캐시 갱신
-    updateTag("orders"); // 주문 내역 캐시 갱신
+    // 주문이 생기면 이 주문 데이터를 읽는 캐시를 모두 갱신한다 (태그 목록: CLAUDE.md, 테스트: order-create "주문 생성 후 캐시 갱신")
+    updateTag("product-sales"); // 판매수 → 인기순 상품 목록
+    updateTag("orders"); // 주문 → 회원 주문 내역 · 관리자 주문 목록 · 접수 건수
     return { orderNo: result.orderNo };
   }
 
