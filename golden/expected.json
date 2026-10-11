@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "note": "정답 세트 (지침 50.1.1 v1.1). expect_verdict가 null이면 판정은 보지 않고 expect_rules 지적 여부만 본다. not_verdict는 나오면 실패인 판정",
   "cases": [
     {
@@ -31,12 +31,13 @@
       "pr": 3,
       "branch": "fix/shop-order-cache-cleanup",
       "title": "♻️ fix(shop): 주문 생성 후 중복 캐시 갱신 정리",
-      "expect_verdict": null,
+      "expect_verdict": "수정 요청",
       "expect_rules": [
-        "R-ARCH-03"
+        "R-GATE-04"
       ],
-      "case": "주문 생성 후 orders 태그를 갱신하지 않으면 주문 내역 · 관리자 목록이 늦게 바뀐다 (FigmaMcp 관리자 PR 검토에서 발견)",
+      "case": "주문 생성 후 orders 태그를 갱신하지 않으면 주문 내역 · 관리자 목록이 늦게 바뀐다 (FigmaMcp 관리자 PR 검토에서 발견) — 2026-10-10부터 통합 테스트(주문 생성 후 캐시 갱신)가 잡는다: CI 실패로 수정 요청이 정답 (R-ARCH-03 지적은 있으면 좋음)",
       "not_verdict": [
+        "통과",
         "사람 판단 필요"
       ]
     },
