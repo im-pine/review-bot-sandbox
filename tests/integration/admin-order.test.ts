@@ -5,7 +5,7 @@ const updateTag = jest.fn();
 jest.unstable_mockModule("next/cache", () => ({ updateTag, cacheLife: jest.fn(), cacheTag: jest.fn() }));
 
 const { db } = await import("@/server/db");
-const { changeOrderStatus } = await import("@/features/admin/order/actions");
+const { changeOrderStatus, revealRecipientPhone } = await import("@/features/admin/order/actions");
 const { getAdminOrders, getAdminOrder } = await import("@/server/services/order/admin");
 const { resetDb, seedProducts, orderer } = await import("./helpers");
 
@@ -170,5 +170,30 @@ describe("관리자 주문 조회 — 개인정보", () => {
     await makeOrder("20261009-0001", "RECEIVED");
     await makeOrder("20261009-0002", "PREPARING");
     expect((await getAdminOrders("RECEIVED")).map((o) => o.orderNo)).toEqual(["20261009-0001"]);
+  });
+});
+
+// #test/필수 #test/개인정보 #test/권한 #test/통합
+describe("수령인 연락처 원본 보기 (배송 연락용)", () => {
+  test("비밀번호를 확인하면 원본 연락처를 돌려준다", async () => {
+    await makeOrder("20261009-0001", "RECEIVED");
+    expect(await revealRecipientPhone(PASSWORD, "20261009-0001")).toEqual({
+      ok: true,
+      phone: orderer.recipientPhone,
+    });
+  });
+
+  test("비밀번호가 틀리거나 문자열이 아니면 원본을 돌려주지 않는다", async () => {
+    await makeOrder("20261009-0001", "RECEIVED");
+    for (const wrong of ["wrong", "", 12345, null, { toString: () => PASSWORD }]) {
+      const result = await revealRecipientPhone(wrong, "20261009-0001");
+      expect(result).toEqual({ ok: false, error: "password" });
+      expect(JSON.stringify(result)).not.toContain(orderer.recipientPhone);
+    }
+  });
+
+  test("없는 주문번호는 not-found", async () => {
+    expect(await revealRecipientPhone(PASSWORD, "20991231-9999")).toEqual({ ok: false, error: "not-found" });
+    expect(await revealRecipientPhone(PASSWORD, 123)).toEqual({ ok: false, error: "not-found" });
   });
 });
