@@ -14,11 +14,11 @@ const ChangeStatusSchema = z.object({
 
 /** 주문 상태 변경 (1건 · 일괄 공용). 상태만 바꾼다 */
 export async function changeOrderStatus(
-  password: string,
+  password: unknown,
   orderNos: string[],
   status: string,
 ): Promise<AdminActionResult> {
-  if (typeof password !== "string" || !verifyAdminPassword(password)) return PASSWORD_ERROR;
+  if (!verifyAdminPassword(password)) return PASSWORD_ERROR;
 
   const parsed = ChangeStatusSchema.safeParse({ orderNos, status });
   if (!parsed.success) {
