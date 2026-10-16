@@ -1,7 +1,7 @@
 import { ArrowLeft, Check } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Fragment } from "react";
+import { Fragment, type ReactNode } from "react";
 import type { OrderStatus } from "@/generated/prisma/enums";
 import { StatusBadge } from "@/shared/ui/StatusBadge";
 import type { AdminOrder } from "@/server/services/order/admin";
@@ -13,6 +13,7 @@ import {
 } from "@/shared/constants/order";
 import { formatPrice } from "@/shared/lib/format";
 import { cn } from "@/shared/lib/utils";
+import { RecipientPhone } from "./RecipientPhone";
 import { NextStepButton, StatusChangeTrigger } from "./StatusChange";
 
 const CARD = "rounded-card border border-line bg-card p-6";
@@ -36,9 +37,9 @@ export function OrderDetail({ order }: { order: AdminOrder }) {
       ]}
     />
   );
-  const recipientRows: [string, string][] = [
+  const recipientRows: [string, ReactNode][] = [
     ["받는 분", order.recipientName],
-    ["연락처", order.recipientPhone],
+    ["연락처", <RecipientPhone key="phone" orderNo={order.orderNo} masked={order.recipientPhone} />],
     ["주소", order.address],
     ["요청사항", order.requestNote || "없음"],
   ];
@@ -89,7 +90,7 @@ export function OrderDetail({ order }: { order: AdminOrder }) {
             <InfoCard
               title="받는 분 정보"
               rows={recipientRows}
-              note="개인정보 보호를 위해 관리자 화면에서도 일부를 가려서 보여 줍니다."
+              note="개인정보 보호를 위해 관리자 화면에서도 일부를 가려서 보여 줍니다. 배송 연락이 필요하면 '연락처 보기'에서 비밀번호를 확인한 뒤 원본을 볼 수 있습니다."
             />
           </div>
         </div>
@@ -275,7 +276,7 @@ function PaymentCard({ order }: { order: AdminOrder }) {
   );
 }
 
-function InfoCard({ title, rows, note }: { title: string; rows: [string, string][]; note?: string }) {
+function InfoCard({ title, rows, note }: { title: string; rows: [string, ReactNode][]; note?: string }) {
   return (
     <section className={cn(CARD, "flex flex-col gap-3")}>
       <h2 className="type-title text-heading">{title}</h2>
@@ -287,7 +288,7 @@ function InfoCard({ title, rows, note }: { title: string; rows: [string, string]
   );
 }
 
-function Row({ label, value }: { label: string; value: string }) {
+function Row({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div className="flex items-start justify-between gap-4 type-body-sm">
       <span className="shrink-0 text-body">{label}</span>

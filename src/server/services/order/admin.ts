@@ -107,6 +107,15 @@ export async function getAdminOrder(orderNo: string) {
 export type AdminOrder = NonNullable<Awaited<ReturnType<typeof getAdminOrder>>>;
 
 /**
+ * 수령인 연락처 원본 — 배송 연락용. 관리자 비밀번호를 확인한 Server Action에서만 부른다 (사용자 결정 2026-10-10, 리뷰봇 선택지 C).
+ * 개인정보 원본이라 캐시하지 않고, 조회 응답(getAdminOrder)에는 계속 마스킹된 값만 둔다.
+ */
+export async function getRecipientPhone(orderNo: string): Promise<string | null> {
+  const order = await db.order.findUnique({ where: { orderNo }, select: { recipientPhone: true } });
+  return order?.recipientPhone ?? null;
+}
+
+/**
  * 주문 상태 변경 (1건 · 일괄 공용). 한 트랜잭션에서 처리한다.
  * - 이미 목표 상태인 주문은 건너뛴다.
  * - 판매수: 취소로 바뀌면 -1, 취소에서 다른 상태로 돌아오면 +1 (sales.ts)

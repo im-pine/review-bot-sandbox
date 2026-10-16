@@ -116,12 +116,16 @@ async function OrdersBody({ searchParams }: { searchParams: SearchParams }) {
   );
 }
 
+/** 상태 필터의 칩 수: 전체 + 상태별 (OrderStatusFilter와 같은 목록) */
+const STATUS_CHIP_COUNT = Object.keys(ORDER_STATUS_LABEL).length + 1;
+
 /** 상태 필터 + 카드 자리 (OrdersBody fallback) — 실제와 같은 높이로 두어 화면이 밀리지 않게 한다 */
 function OrdersBodySkeleton() {
   return (
     <div aria-busy="true" aria-label="주문 내역을 불러오는 중" className="animate-pulse">
       <div className="flex gap-2">
-        {Array.from({ length: 4 }, (_, i) => (
+        {/* 실제 칩(전체 + 상태별)과 같은 개수로 그려, 불러온 뒤 필터 줄이 밀리지 않게 한다 */}
+        {Array.from({ length: STATUS_CHIP_COUNT }, (_, i) => (
           <div key={i} className="h-10 w-24 shrink-0 rounded-pill bg-section" />
         ))}
       </div>
