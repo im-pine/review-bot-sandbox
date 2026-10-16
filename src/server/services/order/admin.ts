@@ -99,7 +99,8 @@ export async function getAdminOrder(orderNo: string) {
     ordererPhone: maskPhone(order.ordererPhone),
     ordererEmail: maskEmail(order.ordererEmail),
     recipientName: maskName(order.recipientName),
-    recipientPhone: maskPhone(order.recipientPhone),
+    // 배송 기사가 바로 연락할 수 있게 상세에서는 수령인 연락처를 그대로 보여 준다
+    recipientPhone: order.recipientPhone,
     address: maskAddress(order.address),
   };
 }
