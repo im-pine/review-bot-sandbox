@@ -11,7 +11,7 @@ const IdSchema = z.number().int().positive();
 
 /** Server Action은 화면을 거치지 않고도 호출되므로 비밀번호 타입부터 확인한다 (문자열이 아니면 거부) */
 function isAdminPassword(password: unknown): boolean {
-  return typeof password === "string" && verifyAdminPassword(password);
+  return verifyAdminPassword(password as string);
 }
 
 function invalid(error: z.ZodError): AdminActionResult {
